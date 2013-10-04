@@ -3,18 +3,15 @@ import java.math.BigInteger;
 
 /**
  * 
- * @author Amritendu Mondal, Anant nag IITM.
+ * @author Amritendu Mondal, Anant nag @ IITM.
  * 
  */
 
 public class LargeInteger extends Number implements Comparable<LargeInteger>,
 		Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-	private boolean sign;// 1 means negative number
+	private boolean sign = false;// true indicates negative number
 	private long[] digit;
 
 	public LargeInteger(LargeInteger l) {
@@ -61,15 +58,10 @@ public class LargeInteger extends Number implements Comparable<LargeInteger>,
 			return -1;
 		}
 		if (len1 == len2) {
-			System.out.println("len equal");
 
 			long[] digit1 = this.getDigit();
 			long[] digit2 = o.getDigit();
 			for (int i = 0; i < len1; i++) {
-				System.out.println("--");
-				System.out.println(digit1[i]);
-				System.out.println(digit2[i]);
-				System.out.println("--");
 				if (digit1[i] > digit2[i]) {
 					return 1;
 				} else if (digit1[i] < digit2[i]) {
@@ -135,19 +127,15 @@ public class LargeInteger extends Number implements Comparable<LargeInteger>,
 		if (val.charAt(0) == '-') {
 			sign = true;
 			startChar = 1;
-			// stringLength--;
 		} else if (val.charAt(0) == '+') {
 			sign = false;
 			startChar = 1;
-			// stringLength--;
 		} else {
 			sign = false;
 		}
 
 		val = val.substring(startChar, stringLength);
-		// val = this.cutOffLeadingZeroes(val);
 		digit = chopAndConvert(val);
-		// printDigit();
 	}
 
 	/**
@@ -166,12 +154,10 @@ public class LargeInteger extends Number implements Comparable<LargeInteger>,
 			arr[0] = 0;
 			return arr;
 		}
-		// System.out.println(str+"dddddd");
 		len = (int) (Math.ceil((double) ((double) str.length() / 18)));
 		arr = new long[len];
 		left = str.length() % 18;
 		if (left != 0) {
-			// left = (left == 0) ? 18 : left;
 			arr[0] = Long.parseLong(str.substring(0, left));
 			beg = left;
 		} else {
@@ -190,24 +176,6 @@ public class LargeInteger extends Number implements Comparable<LargeInteger>,
 
 	/**
 	 * 
-	 * @param str
-	 * @return
-	 * @Description This method split the string and store it as long
-	 */
-	// private long[] chopAndConvert(String str) {
-	//
-	// String st[] = splitInParts(str, 18);
-	// long[] arr = new long[st.length];
-	// int c=0;
-	// for (String s : st) {
-	// arr[c++] = Long.parseLong(s);
-	// }
-	// System.out.println(arr.length);
-	// return arr;
-	// }
-
-	/**
-	 * 
 	 * @param s
 	 * @param partLength
 	 * @return
@@ -216,11 +184,10 @@ public class LargeInteger extends Number implements Comparable<LargeInteger>,
 	private String[] splitInParts(String s, int partLength) {
 		int len = s.length();
 
-		// Number of parts
-		int nparts = (len + partLength - 1) / partLength;
+		int nparts = (len + partLength - 1) / partLength;/* Number of parts */
 		String parts[] = new String[nparts];
 
-		// Break into parts
+		/* Break into parts */
 		int offset = 0;
 		int i = 0;
 		while (i < nparts) {
@@ -282,7 +249,7 @@ public class LargeInteger extends Number implements Comparable<LargeInteger>,
 	}
 
 	public LargeInteger add(LargeInteger val) {
-		
+
 		preprocess(val);
 		Elementary elm = new Elementary();
 
@@ -319,14 +286,13 @@ public class LargeInteger extends Number implements Comparable<LargeInteger>,
 		} else if (!(String.valueOf(digit[0]).startsWith("-") || sign)
 				&& (String.valueOf(val.getDigit()).startsWith("-") || val
 						.isSign())) {
-			//System.out.println(val.isSign()+"ffffffffffffffffff"+val+"ccc"+this.sign);
 			if (String.valueOf(val.getDigit()).startsWith("-")) {
 				s = String.valueOf(val.getDigit()[0]).substring(1);
 				val.getDigit()[0] = Long.parseLong(s);
-				
+
 			}
 
-			re = elm.sub(this,val);
+			re = elm.sub(this, val);
 
 		} else if ((String.valueOf(digit[0]).startsWith("-") || sign)
 				&& !(String.valueOf(val.getDigit()).startsWith("-") || val
@@ -336,7 +302,7 @@ public class LargeInteger extends Number implements Comparable<LargeInteger>,
 				digit[0] = Long.parseLong(s);
 			}
 
-			re = elm.sub(this,val);
+			re = elm.sub(this, val);
 
 		} else {
 			re = elm.add(this, val);
@@ -346,7 +312,7 @@ public class LargeInteger extends Number implements Comparable<LargeInteger>,
 			re.setSign(true);
 
 		}
-		
+
 		LargeInteger l = new LargeInteger(re.toString());
 		l.setSign(re.isSign());
 		return l;
@@ -354,89 +320,6 @@ public class LargeInteger extends Number implements Comparable<LargeInteger>,
 
 	public LargeInteger sub(LargeInteger val) {
 
-		/*String s = this.toString();
-		String t = val.toString();
-		// System.out.println("subbbbbbbb"+s+":"+t);
-		if (s == null || s.isEmpty()) {
-			s = "0";
-		}
-
-		if (t == null || t.isEmpty()) {
-			t = "0";
-		}
-
-		BigInteger b1;
-		BigInteger b2;
-		LargeInteger re = null;
-		if ((s.startsWith("-") || sign) && (val.isSign() || t.startsWith("-"))) {
-			
-			if (!sign)
-				s = s.substring(1);
-			
-			if (!val.isSign())
-				t = t.substring(1);
-
-			b1 = new BigInteger(s);
-			b2 = new BigInteger(t);
-			re = new LargeInteger(b2.subtract(b1).toString());
-
-		} else if (!(s.startsWith("-") || !sign)
-				&& (val.isSign() || t.startsWith("-"))) {
-			if (!val.isSign())
-				t = t.substring(1);
-
-			b1 = new BigInteger(s);
-			b2 = new BigInteger(t);
-			re = new LargeInteger(b1.add(b2).toString());
-			re.setSign(false);
-
-		} else if ((s.startsWith("-") || sign)
-				&& (!val.isSign() || !t.startsWith("-"))) {
-			if (!sign)
-				s = s.substring(1);
-
-			b1 = new BigInteger(s);
-			b2 = new BigInteger(t);
-			re = new LargeInteger(b1.add(b2).toString());
-			re.setSign(true);
-		} else {
-			b1 = new BigInteger(s);
-			b2 = new BigInteger(t);
-			re = new LargeInteger(b1.subtract(b2).toString());
-
-		}
-		if (re.toString().startsWith("-")) {
-			re = new LargeInteger(re.toString().substring(1));
-			re.setSign(true);
-
-		}
-
-		// System.out.println(re+"subbbbbbbb");
-		LargeInteger l=new LargeInteger(re.toString());
-		l.setSign(re.isSign());
-		if(String.valueOf(l.getDigit()[0]).length()>18)
-			System.out.println(String.valueOf(l.getDigit()[0]).length()+"ddddddddddddd");
-
-		return l;*/
-
-		// Elementary elmtry = new Elementary();
-		// LargeInteger r = null;
-		// if (val.sign && this.sign) {
-		// r = elmtry.sub(val, this);
-		//
-		// } else if (val.sign && !this.sign) {
-		// r = elmtry.add(this, val);
-		//
-		// } else if (!val.sign && this.sign) {
-		// r = elmtry.add(val, this);
-		// } else {
-		// r = elmtry.sub(this, val);
-		// }
-		//
-		// return r;
-		
-		
-		
 		preprocess(val);
 		Elementary elm = new Elementary();
 
@@ -474,10 +357,10 @@ public class LargeInteger extends Number implements Comparable<LargeInteger>,
 			if (String.valueOf(val.getDigit()).startsWith("-")) {
 				s = String.valueOf(val.getDigit()[0]).substring(1);
 				val.getDigit()[0] = Long.parseLong(s);
-				
+
 			}
 
-			re = elm.add(this,val);
+			re = elm.add(this, val);
 			re.setSign(false);
 
 		} else if ((String.valueOf(digit[0]).startsWith("-") || sign)
@@ -488,26 +371,41 @@ public class LargeInteger extends Number implements Comparable<LargeInteger>,
 				digit[0] = Long.parseLong(s);
 			}
 
-			re = elm.add(this,val);
+			re = elm.add(this, val);
 			re.setSign(true);
 
 		} else {
 			re = elm.sub(this, val);
 		}
-		
-		
+
 		LargeInteger l = new LargeInteger(re.toString());
 		l.setSign(re.isSign());
 		return l;
 	}
 
+	/**
+	 * @Description: Multiply two large integer sequentially, created for
+	 *               testing performance
+	 * @param l
+	 * @return
+	 */
 	public LargeInteger multiplySeq(LargeInteger l) {
-
 		return Multipication.multiplySeq(this, l);
+	}
+	
+	/**
+	 * @Description: Multiply two large integer sequentially, created for
+	 *               testing performance
+	 * @param l
+	 * @return
+	 */
+	public LargeInteger multiply(LargeInteger l) {
+		return Multipication.multiply(this, l);
 	}
 
 	/**
-	 * 
+	 * @Description: The method preprocess the data , eg: removing leading zero,
+	 *               convert sign to a unsigned number.
 	 * @param val
 	 */
 	private void preprocess(LargeInteger val) {
@@ -517,68 +415,37 @@ public class LargeInteger extends Number implements Comparable<LargeInteger>,
 
 	}
 
-	
 	/**
-	 * 
+	 * @Description: Making same length integers.
 	 * @param val
 	 */
 	private void lengthFix(LargeInteger val) {
 
-		// System.out.println("digit 1 " + val.getDigit().length);
-		// System.out.println("digit 2 " + this.digit.length);
 		if (val.getDigit().length == this.digit.length) {
 			return;
 		} else if (val.getDigit().length > this.digit.length) {
-			// System.out.println("second case");
 			String append = "";
 			int i = 0;
 			for (i = 0; i < (val.getDigit().length * 18)
 					- (this.digit.length * 18); i++) {
 				append += "0";
 			}
-			// LargeInteger l = new LargeInteger(append +
-			// getStringOfDigit(this));
-			// LargeInteger l = new LargeInteger(append + this.toString());
-			// this.digit = chopAndConvert(append+this.toString());
-			// System.out.println(append+getStringOfDigit(this));
+
 			this.digit = chopAndConvert(append + toString());
-			// this.digit = l.digit;
 
 		} else {
-			// System.out.println("third case");
 			String append = "";
 			for (int i = 0; i < (this.digit.length * 18)
 					- (val.getDigit().length * 18); i++) {
 				append += "0";
 			}
-			// System.out.println(val.toString());
-			// System.out.println("--->"+getStringOfDigit(val));
-			// LargeInteger l = new LargeInteger(append +
-			// getStringOfDigit(val)); bug in getStringofDigti
-			// LargeInteger l = new LargeInteger(append+val.toString());
 			val.digit = chopAndConvert(append + val.toString());
-			// val.digit = l.getDigit();
 		}
-
-		// System.out.println(String.valueOf(val.getDigit()) +
-		// val.getDigit().length);
-		// System.out.println(String.valueOf(this.digit) + this.digit.length);
-
-		// System.out.println();
-		// for(int i=0;i<this.digit.length;i++)
-		// {
-		// System.out.print(this.digit[i]);
-		// }
-		// System.out.println();
-		// for(int i=0;i<val.digit.length;i++)
-		// {
-		// System.out.print(val.getDigit()[i]);
-		// }
 
 	}
 
 	/**
-	 * 
+	 * @Description: Make string of digits , digit array contains
 	 * @param val
 	 * @return
 	 */
@@ -595,79 +462,6 @@ public class LargeInteger extends Number implements Comparable<LargeInteger>,
 		}
 	}
 
-	public String shiftLeft(ParallelMultipication pmul, boolean lint1, int len) {
-		if (len <= 0) {
-			len = 0;
-		}
-		if (pmul != null) {
-			try {
-				if (lint1 && pmul.getlInt1() != null) {
-					return pmul.getlInt1().substring(len);
-				} else if (!lint1 && pmul.getlInt2() != null) {
-					return pmul.getlInt2().substring(len);
-
-				}
-			} catch (Exception ex) {
-				System.out.println("Exception in shifleft:" + ex.toString());
-				return "";
-			}
-		}
-		String str = "", st = "";
-		for (int i = 0; i < this.length(); i++) {
-			str += String.valueOf(digit[i]);
-			if (i >= len) {
-				st += String.valueOf(digit[i]);
-
-			}
-		}
-
-		if (pmul != null && lint1) {
-			pmul.setlInt1(str);
-		}
-		if (pmul != null && !lint1) {
-			pmul.setlInt2(str);
-		}
-		return st;
-	}
-
-	public String shiftRight(ParallelMultipication pmul, boolean lint1, int len) {
-
-		if (len <= 0) {
-			len = 0;
-		}
-		if (pmul != null) {
-			try {
-				if (lint1 && pmul.getlInt1() != null) {
-					return pmul.getlInt1().substring(0,
-							pmul.getlInt1().length() - len - 1);
-				} else if (!lint1 && pmul.getlInt2() != null) {
-					return pmul.getlInt2().substring(0,
-							pmul.getlInt1().length() - len - 1);
-
-				}
-			} catch (Exception ex) {
-				System.out.println("Exception in shifleft:" + ex.toString());
-				return "";
-			}
-		}
-		String str = "", st = "";
-		for (int i = 0; i < this.length(); i++) {
-			str += String.valueOf(digit[i]);
-			if ((this.length() - i) > len) {
-				st += String.valueOf(digit[i]);
-
-			}
-		}
-
-		if (pmul != null && lint1) {
-			pmul.setlInt1(str);
-		}
-		if (pmul != null && !lint1) {
-			pmul.setlInt2(str);
-		}
-		return st;
-	}
-
 	@Override
 	public String toString() {
 		String str = "";
@@ -676,7 +470,6 @@ public class LargeInteger extends Number implements Comparable<LargeInteger>,
 
 			if (String.valueOf(digit[i]).length() >= 18) {
 				str += String.valueOf(digit[i]);
-				// System.out.println("qqq");
 			} else if (i != 0) {
 				String st = String.valueOf(digit[i]);
 				for (int j = 0; j < 18 - String.valueOf(digit[i]).length(); j++) {
@@ -685,7 +478,6 @@ public class LargeInteger extends Number implements Comparable<LargeInteger>,
 
 				str += st;
 			} else {
-				// System.out.println(String.valueOf(digit[i]).length());
 				str += String.valueOf(digit[i]);
 			}
 
@@ -694,10 +486,14 @@ public class LargeInteger extends Number implements Comparable<LargeInteger>,
 		if (str.isEmpty()) {
 			str = "0";
 		}
-		// System.out.println("sign"+sign);
 		return str;
 	}
 
+	/**
+	 * @Description: Shifting large integer by len position bitwise left.
+	 * @param l
+	 * @return
+	 */
 	public LargeInteger bitwiseLeftShift(long l) {
 		LargeInteger li = new LargeInteger(this);
 		for (int i = 0; i < l; i++) {
@@ -706,6 +502,10 @@ public class LargeInteger extends Number implements Comparable<LargeInteger>,
 		return li;
 	}
 
+	/**
+	 * @Description: Helper to the bitwiseLeftShift method.
+	 * @return
+	 */
 	public LargeInteger bitwiseLeftShiftHelper() {
 		long arr[];
 		long result[];
@@ -715,12 +515,9 @@ public class LargeInteger extends Number implements Comparable<LargeInteger>,
 		len = this.getDigit().length;
 		long carry = 0;
 		long temp = arr[len - 1] * 2;
-		// int i = len-2;
 		carry = (int) (temp / 1000000000000000000l);
 		arr[len - 1] = temp % 1000000000000000000l;
-		// System.out.println("first carry  " + carry);
 		for (int i = len - 2; i >= 0; i--) {
-			// System.out.println("carry " + carry);
 			temp = arr[i] * 2;
 			arr[i] = temp % 1000000000000000000l + carry;
 			carry = (int) (temp / 1000000000000000000l);
@@ -738,25 +535,36 @@ public class LargeInteger extends Number implements Comparable<LargeInteger>,
 		return this;
 	}
 
+	/**
+	 * @Description: Rotate the small integer
+	 * @param l
+	 * @param carry
+	 * @param i
+	 * @param resultArr
+	 * @return
+	 */
 	private int leftRotateSmall(LargeInteger l, long carry, int i,
 			long[] resultArr) {
 		long result = 0;
 		int left;
-		// System.out.println("---" + result);
-		// System.out.println("------>"+l.getDigit()[i]);
 		result = l.getDigit()[i];
-		// System.out.println("---" + result);
 
 		left = (int) (l.getDigit()[i] / 100000000000000000l);
-		// result = result + carry;
 		result = result % 100000000000000000l;
 		result = result * 10;
 		result = result + carry;
 		resultArr[i] = result;
-		// l.getDigit()[i] = result;
 		return left;
 	}
 
+	/**
+	 * @Description: Rotate the large integers
+	 * @param l
+	 * @param carry
+	 * @param i
+	 * @param resultArr
+	 * @return
+	 */
 	private int leftRotateLarge(LargeInteger l, long carry, int i,
 			long[] resultArr) {
 		long result;
@@ -767,11 +575,13 @@ public class LargeInteger extends Number implements Comparable<LargeInteger>,
 		result = result * 10;
 		result = result + carry;
 		resultArr[i + 1] = result;
-		// System.out.println("--"+resultArr[i+1]);
-		// l.getDigit()[i] = result;
 		return left;
 	}
 
+	/**
+	 * @Desciption:Providing sign to the integers.
+	 * @param lr
+	 */
 	private void signFixed(LargeInteger lr) {
 		if (lr.getDigit() != null) {
 			if (String.valueOf(lr.getDigit()[0]).startsWith("-")) {
@@ -782,24 +592,29 @@ public class LargeInteger extends Number implements Comparable<LargeInteger>,
 		}
 	}
 
+	/**
+	 * @Description: Shifting large integer by len position left.
+	 * @param pmul
+	 * @param lint1
+	 * @param len
+	 * @return
+	 */
 	public LargeInteger leftShift(long l) {
 		LargeInteger li = new LargeInteger(this);
-			signFixed(li);
-		
+		signFixed(li);
+
 		for (int i = 0; i < l; i++) {
 			li = li.leftShiftHelper();
 		}
-		//System.out.println(toString()+" amrrrr "+sign+"sssssssssss "+li+" amrrr "+li.isSign());
 		return li;
 	}
 
-	public LargeInteger leftShiftHelper() {
+	private LargeInteger leftShiftHelper() {
 		int len = 0;
 		len = this.getDigit().length;
 		long[] resultArr;
 		LargeInteger li = new LargeInteger(this);
 		if (String.valueOf(this.getDigit()[0]).length() >= 18) {
-			// System.out.println("inside ");
 			resultArr = new long[len + 1];
 
 			int carry = 0;
@@ -810,7 +625,6 @@ public class LargeInteger extends Number implements Comparable<LargeInteger>,
 				carry = leftRotateLarge(li, carry, i, resultArr);
 
 			}
-			// System.out.println(carry);
 			resultArr[0] = carry;
 			li.digit = resultArr;
 			return li;
@@ -832,18 +646,13 @@ public class LargeInteger extends Number implements Comparable<LargeInteger>,
 		return li;
 	}
 
-	/*
-	 * public LargeInteger leftShift(long l) {
+	/**
 	 * 
-	 * LargeInteger li = new LargeInteger(this); int len = 0,carry = 0; for (int
-	 * j = 0; j < l; j++) { len = li.getDigit().length; carry = 0; for (int i =
-	 * len - 1; i >= 0; i--) { carry = leftRotate(li, carry, i); } }
-	 * if(carry!=0) { long []arr = new long[len+1]; arr[len] = carry;
-	 * 
-	 * }
-	 * 
-	 * 
-	 * return li; }
+	 * @Description: Shifting large integer by len position right.
+	 * @param pmul
+	 * @param lint1
+	 * @param len
+	 * @return
 	 */
 	public LargeInteger rightShift(long l) {
 		LargeInteger li = new LargeInteger(this);
@@ -855,17 +664,15 @@ public class LargeInteger extends Number implements Comparable<LargeInteger>,
 		return li;
 	}
 
-	public LargeInteger rightShiftHelper() {
+	private LargeInteger rightShiftHelper() {
 		long[] temp;
 		LargeInteger li = new LargeInteger(this);
 		int borrow = 0;
 		temp = this.getDigit();
 		int len = temp.length;
-		// System.out.println("len "+len);
 		long resultArr[];
 		if (len != 0 && len != 1 && String.valueOf(temp[0]).length() == 1
 				&& temp[0] != 0) {
-			// System.out.println("temp 0"+temp[0]);
 			borrow = (int) temp[0];
 			resultArr = new long[len - 1];
 			for (int i = 1; i < len; i++) {
@@ -884,6 +691,14 @@ public class LargeInteger extends Number implements Comparable<LargeInteger>,
 		}
 	}
 
+	/**
+	 * @Description: Rotate the integer clockwise
+	 * @param l
+	 * @param borrow
+	 * @param i
+	 * @param resultArr
+	 * @return
+	 */
 	private int rightRotateLarge(LargeInteger l, long borrow, int i,
 			long[] resultArr) {
 		long result;
@@ -891,11 +706,17 @@ public class LargeInteger extends Number implements Comparable<LargeInteger>,
 		result = l.getDigit()[i] / 10;
 		result = result + borrow * 100000000000000000l;
 		left = (int) (l.getDigit()[i] % 10);
-		// l.getDigit()[i] = result;
 		resultArr[i - 1] = result;
 		return left;
 	}
 
+	/**
+	 * 
+	 * @param l
+	 * @param borrow
+	 * @param i
+	 * @return
+	 */
 	private int rightRotateSmall(LargeInteger l, long borrow, int i) {
 		long result;
 		int left;
@@ -903,7 +724,6 @@ public class LargeInteger extends Number implements Comparable<LargeInteger>,
 		result = result + borrow * 100000000000000000l;
 		left = (int) (l.getDigit()[i] % 10);
 		l.getDigit()[i] = result;
-		// resultArr[i-1] = result;
 		return left;
 	}
 
